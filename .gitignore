@@ -1,0 +1,17 @@
+##### file backups
+*~
+*.*~
+*.pdf
+##### latex files
+*.aux
+*.log
+*.synctex.gz
+##### eclipse files
+.classpath
+.metadata/
+.project
+.recommenders/
+.settings/
+*.class
+
+
