@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 
 /**
@@ -125,9 +126,9 @@ public abstract class Prattle {
 							tt.setFuture(clientFuture);
 						}
 					} catch (AssertionError ae) {
-						System.err.println("Caught Assertion: " + ae.toString());
+						ChatLogger.error("Caught Assertion: " + ae.toString());
 					} catch (Exception e) {
-						System.err.println("Caught Exception: " + e.toString());
+					  ChatLogger.error("Caught Exception: " + e.toString());
 					}
 				}
 			}
@@ -145,7 +146,7 @@ public abstract class Prattle {
 		// Test and see if the thread was in our list of active clients so that we
 		// can remove it.
 		if (!active.remove(dead)) {
-			System.out.println("Could not find a thread that I tried to remove!\n");
+		  ChatLogger.info("Could not find a thread that I tried to remove!\n");
 		}
 	}
 }

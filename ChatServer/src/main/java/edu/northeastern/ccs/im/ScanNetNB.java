@@ -67,7 +67,7 @@ public class ScanNetNB {
 			key = channel.register(selector, SelectionKey.OP_READ);
 		} catch (IOException e) {
 			// For the moment we are going to simply cover up that there was a problem.
-			System.err.println(e.toString());
+			ChatLogger.error(e.toString());
 			assert false;
 		}
 	}
@@ -203,7 +203,7 @@ public class ScanNetNB {
 			throw new NextDoesNotExistException("No next line has been typed in at the keyboard");
 		}
 		Message msg = messages.remove();
-		System.err.println(msg.toString());
+		ChatLogger.info(msg.toString());
 		return msg;
 	}
 
@@ -211,8 +211,7 @@ public class ScanNetNB {
 		try {
 			selector.close();
 		} catch (IOException e) {
-			System.err.print("Caught exception: ");
-			e.printStackTrace();
+			ChatLogger.error("Caught exception: " + e.toString());
 			assert false;
 		}
 	}
