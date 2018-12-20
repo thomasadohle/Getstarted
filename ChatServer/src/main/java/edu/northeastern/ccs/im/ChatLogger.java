@@ -18,7 +18,6 @@ public class ChatLogger {
 
   static {
     createFileHandler();
-    LOGGER.setUseParentHandlers(false);
   }
 
   /**
@@ -32,33 +31,34 @@ public class ChatLogger {
    * Makes a handler for the logger to use.
    */
   private static final void createFileHandler() {
+    Handler fileHandler;
     try {
-      Handler fileHandler = new FileHandler(PATH);
+      fileHandler = new FileHandler(PATH);
       Formatter simpleFormatter = new SimpleFormatter();
       LOGGER.addHandler(fileHandler);
       fileHandler.setLevel(Level.ALL);
       LOGGER.setLevel(Level.ALL);
       fileHandler.setFormatter(simpleFormatter);
-    } catch (SecurityException | IOException e) {
-      LOGGER.log(Level.SEVERE, e.toString(), e);
-      throw new IllegalStateException(e.toString());
+      LOGGER.setUseParentHandlers(false);
+    } catch (IOException e) {
+      throw new IllegalStateException(e.getMessage());
     }
   }
 
   private static final boolean write(Level lvl, Object obj) {
-    boolean done = false;
+    boolean done = true;
     try {
       String msg = String.valueOf(obj);
       LOGGER.log(lvl, msg);
-      done = true;
     } catch (SecurityException ex) {
-      error(ex.toString());
+      done = false;
     }
     return done;
   }
 
   /**
    * Logs the error messages.
+   * 
    * @param msg error message to be logged
    */
   public static final void error(Object msg) {
@@ -67,6 +67,7 @@ public class ChatLogger {
 
   /**
    * Logs the warnings.
+   * 
    * @param msg warning to be logged
    */
   public static final void warning(Object msg) {
@@ -75,6 +76,7 @@ public class ChatLogger {
 
   /**
    * Logs the general messages.
+   * 
    * @param msg message to be logged
    */
   public static final void info(Object msg) {

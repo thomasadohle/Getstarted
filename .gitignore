@@ -1,11 +1,9 @@
 ##### file backups
 *~
 *.*~
-*.pdf
-##### latex files
-*.aux
+##### log file
+*.lck
 *.log
-*.synctex.gz
 ##### eclipse files
 .classpath
 .metadata/
