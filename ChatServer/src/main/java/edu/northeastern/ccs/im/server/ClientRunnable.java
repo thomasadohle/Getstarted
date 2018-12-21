@@ -7,6 +7,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
 
@@ -134,7 +135,7 @@ public class ClientRunnable implements Runnable {
 	 * @return True if we sent the message successfully; false otherwise.
 	 */
 	private boolean sendMessage(Message message) {
-		System.out.println("\t" + message);
+		ChatLogger.info("\t" + message);
 		return connection.sendMessage(message);
 	}
 
@@ -274,7 +275,7 @@ public class ClientRunnable implements Runnable {
 		// when they have, terminate
 		// the client.
 		if (!terminate && terminateInactivity.before(new GregorianCalendar())) {
-			System.err.println("Timing out or forcing off a user " + name);
+			ChatLogger.error("Timing out or forcing off a user " + name);
 			terminateClient();
 		}
 	}
@@ -301,7 +302,7 @@ public class ClientRunnable implements Runnable {
 			socket.close();
 		} catch (IOException e) {
 			// If we have an IOException, ignore the problem
-			e.printStackTrace();
+			ChatLogger.error(e.toString());
 		} finally {
 			// Remove the client from our client listing.
 			Prattle.removeClient(this);

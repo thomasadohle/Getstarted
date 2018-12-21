@@ -82,7 +82,7 @@ public class NetworkConnection {
 			key = channel.register(selector, SelectionKey.OP_READ);
 		} catch (IOException e) {
 			// For the moment we are going to simply cover up that there was a problem.
-			System.err.println(e.toString());
+			ChatLogger.error(e.toString());
 			assert false;
 		}
 	}
@@ -112,7 +112,7 @@ public class NetworkConnection {
 		}
 		// Check to see if we were successful in our attempt to write the message
 		if (wrapper.hasRemaining()) {
-			System.err.println("WARNING: Sent only " + bytesWritten + " out of " + wrapper.limit()
+			ChatLogger.warning("WARNING: Sent only " + bytesWritten + " out of " + wrapper.limit()
 					+ " bytes -- dropping this user.");
 			return false;
 		}
@@ -237,7 +237,7 @@ public class NetworkConnection {
 			throw new NextDoesNotExistException("No next line has been typed in at the keyboard");
 		}
 		Message msg = messages.remove();
-		System.err.println(msg.toString());
+		ChatLogger.info(msg.toString());
 		return msg;
 	}
 
@@ -245,8 +245,7 @@ public class NetworkConnection {
 		try {
 			selector.close();
 		} catch (IOException e) {
-			System.err.print("Caught exception: ");
-			e.printStackTrace();
+			ChatLogger.error("Caught exception: " + e.toString());
 			assert false;
 		}
 	}

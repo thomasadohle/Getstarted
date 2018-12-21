@@ -1,7 +1,9 @@
 ##### file backups
 *~
 *.*~
-*.pdf
+##### log file
+*.lck
+*.log
 ##### eclipse files
 .classpath
 .metadata/
@@ -9,6 +11,7 @@
 .recommenders/
 .settings/
 .sonarlint/
+target/
 *.class
 
 
