@@ -78,7 +78,7 @@ public class PrintNetNB {
 		}
 		// Check to see if we were successful in our attempt to write the message
 		if (wrapper.hasRemaining()) {
-			System.err.println("WARNING: Sent only " + bytesWritten + " out of " + wrapper.limit()
+			ChatLogger.warning("WARNING: Sent only " + bytesWritten + " out of " + wrapper.limit()
 					+ " bytes -- dropping this user.");
 			return false;
 		}
