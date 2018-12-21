@@ -66,7 +66,6 @@ public class ChatLogger {
   private static final boolean write(Level lvl, String msg) {
     boolean done = true;
     try {
-//      String msg = String.valueOf(obj);
       LOGGER.log(lvl, msg);
     } catch (SecurityException ex) {
       done = false;
