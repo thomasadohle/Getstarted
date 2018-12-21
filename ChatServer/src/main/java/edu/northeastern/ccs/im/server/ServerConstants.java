@@ -16,18 +16,18 @@ package edu.northeastern.ccs.im.server;
  */
 public class ServerConstants {
 
-	/** The port number to listen on. */
-	protected static final int PORT = 4545;
+  /** The port number to listen on. */
+  protected static final int PORT = 4545;
 
-	/** Name of the private user who broadcasts interesting responses. */
-	protected static final String SERVER_NAME = "Prattle";
+  /** Name of the private user who broadcasts interesting responses. */
+  protected static final String SERVER_NAME = "Prattle";
 
-	/** Name of the private user who handles bad requests. */
-	protected static final String BOUNCER_ID = "Bouncer";
+  /** Name of the private user who handles bad requests. */
+  protected static final String BOUNCER_ID = "Bouncer";
 
-	/** Private constructor to prevent anyone from creating one of these. */
-	private ServerConstants() {
-		/* does nothing. */
-	}
+  /** Private constructor to prevent anyone from creating one of these. */
+  private ServerConstants() {
+    /* does nothing. */
+  }
 
 }
