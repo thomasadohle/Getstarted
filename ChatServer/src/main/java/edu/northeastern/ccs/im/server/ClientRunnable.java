@@ -8,8 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
 
 import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.PrintNetNB;
-import edu.northeastern.ccs.im.ScanNetNB;
+import edu.northeastern.ccs.im.NetworkConnection;
 
 /**
  * Instances of this class handle all of the incoming communication from a
@@ -46,13 +45,8 @@ public class ClientRunnable implements Runnable {
 	/** Socket over which the conversation with the single client occurs. */
 	private final SocketChannel socket;
 
-	/**
-	 * Utility class which we will use to receive communication from this client.
-	 */
-	private ScanNetNB input;
-
-	/** Utility class which we will use to send communication to this client. */
-	private PrintNetNB output;
+	/** Utility class which we will use to send and receive communication to this client. */
+	private NetworkConnection connection;
 
 	/** Id for the user for whom we use this ClientRunnable to communicate. */
 	private int userId;
@@ -87,10 +81,8 @@ public class ClientRunnable implements Runnable {
 		// Set up the SocketChannel over which we will communicate.
 		socket = client;
 		socket.configureBlocking(false);
-		// Create the class we will use to receive input
-		input = new ScanNetNB(socket);
-		// Create the class we will use to send output
-		output = new PrintNetNB(socket);
+		// Create the class we will use to send and receive communication
+		connection = new NetworkConnection(socket);
 		// Mark that we are not initialized
 		initialized = false;
 		// Create the queue of messages to be sent
@@ -107,9 +99,9 @@ public class ClientRunnable implements Runnable {
 	 */
 	private void checkForInitialization() {
 		// Check if there are any input messages to read
-		if (input.hasNextMessage()) {
+		if (connection.hasNextMessage()) {
 			// If a message exists, try to use it to initialize the connection
-			Message msg = input.nextMessage();
+			Message msg = connection.nextMessage();
 			if (setUserName(msg.getName())) {
 				// Update the time until we terminate this client due to inactivity.
 				terminateInactivity.setTimeInMillis(
@@ -143,7 +135,7 @@ public class ClientRunnable implements Runnable {
 	 */
 	private boolean sendMessage(Message message) {
 		System.out.println("\t" + message);
-		return output.print(message);
+		return connection.sendMessage(message);
 	}
 
 	/**
@@ -227,9 +219,9 @@ public class ClientRunnable implements Runnable {
 				// Client has already been initialized, so we should first check
 				// if there are any input
 				// messages.
-				if (input.hasNextMessage()) {
+				if (connection.hasNextMessage()) {
 					// Get the next message
-					Message msg = input.nextMessage();
+					Message msg = connection.nextMessage();
 					// Update the time until we terminate the client for
 					// inactivity.
 					terminateInactivity.setTimeInMillis(
@@ -305,7 +297,7 @@ public class ClientRunnable implements Runnable {
 	public void terminateClient() {
 		try {
 			// Once the communication is done, close this connection.
-			input.close();
+			connection.close();
 			socket.close();
 		} catch (IOException e) {
 			// If we have an IOException, ignore the problem
