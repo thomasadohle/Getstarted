@@ -10,6 +10,7 @@
 .project
 .recommenders/
 .settings/
+.sonarlint/
 *.class
 
 
