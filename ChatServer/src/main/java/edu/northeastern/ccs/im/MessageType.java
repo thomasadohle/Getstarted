@@ -5,10 +5,6 @@ public enum MessageType {
 	 * Message sent by the user attempting to login using a specified username.
 	 */
 	HELLO("HLO"),
-	/** Message sent by the server acknowledging a successful log in. */
-	ACKNOWLEDGE("ACK"),
-	/** Message sent by the server rejecting a login attempt. */
-	NO_ACKNOWLEDGE("NAK"),
 	/**
 	 * Message sent by the user to start the logging out process and sent by the
 	 * server once the logout process completes.

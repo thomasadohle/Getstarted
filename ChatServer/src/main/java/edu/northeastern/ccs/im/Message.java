@@ -117,32 +117,8 @@ public class Message {
 			result = makeSimpleLoginMessage(srcName);
 		} else if (handle.compareTo(MessageType.BROADCAST.toString()) == 0) {
 			result = makeBroadcastMessage(srcName, text);
-		} else if (handle.compareTo(MessageType.ACKNOWLEDGE.toString()) == 0) {
-			result = makeAcknowledgeMessage(srcName);
-		} else if (handle.compareTo(MessageType.NO_ACKNOWLEDGE.toString()) == 0) {
-			result = makeNoAcknowledgeMessage();
 		}
 		return result;
-	}
-
-	/**
-	 * Create a new message to reject the bad login attempt.
-	 * 
-	 * @return Instance of Message that rejects the bad login attempt.
-	 */
-	public static Message makeNoAcknowledgeMessage() {
-		return new Message(MessageType.NO_ACKNOWLEDGE);
-	}
-
-	/**
-	 * Create a new message to acknowledge that the user successfully logged as the
-	 * name <code>srcName</code>.
-	 * 
-	 * @param srcName Name the user was able to use to log in.
-	 * @return Instance of Message that acknowledges the successful login.
-	 */
-	public static Message makeAcknowledgeMessage(String srcName) {
-		return new Message(MessageType.ACKNOWLEDGE, srcName);
 	}
 
 	/**
@@ -175,30 +151,11 @@ public class Message {
 	}
 
 	/**
-	 * Determine if this message is an acknowledgement message.
-	 * 
-	 * @return True if the message is an acknowledgement message; false otherwise.
-	 */
-	public boolean isAcknowledge() {
-		return (msgType == MessageType.ACKNOWLEDGE);
-	}
-
-	/**
 	 * Determine if this message is broadcasting text to everyone.
 	 * 
 	 * @return True if the message is a broadcast message; false otherwise.
 	 */
 	public boolean isBroadcastMessage() {
-		return (msgType == MessageType.BROADCAST);
-	}
-
-	/**
-	 * Determine if this message contains text which the recipient should display.
-	 * 
-	 * @return True if the message is an actual instant message; false if the
-	 *         message contains data
-	 */
-	public boolean isDisplayMessage() {
 		return (msgType == MessageType.BROADCAST);
 	}
 
