@@ -12,9 +12,10 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * This class is similar to the java.util.Scanner class, but this class's
- * methods return immediately and does not wait for network input (it is
- * &quot;non-blocking&quot; in technical parlance).
+ * This class is similar to the java.io.PrintWriter class, but this class's
+ * methods work with our non-blocking Socket classes. This class could easily be
+ * made to wait for network output (e.g., be made &quot;non-blocking&quot; in
+ * technical parlance), but I have not worried about it yet.
  * 
  * This work is licensed under the Creative Commons Attribution-ShareAlike 4.0
  * International License. To view a copy of this license, visit
@@ -22,21 +23,33 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * originally written by Matthew Hertz and has been adapted for use in a class
  * assignment at Northeastern University.
  * 
- * @version 1.3
+ * @version 1.4
  */
-public class ScanNetNB {
+public class NetworkConnection {
+
+	/** The size of the incoming buffer. */
 	private static final int BUFFER_SIZE = 64 * 1024;
 
+	/** The base for number conversions. */
 	private static final int DECIMAL_RADIX = 10;
 
+	/** The length of the message handle. */ // MEJ: why is this not in Message?
 	private static final int HANDLE_LENGTH = 3;
 
+	/** The minimum length of a message. */ // MEJ: why is this not in Message?
 	private static final int MIN_MESSAGE_LENGTH = 7;
 
+	/** The default character set. */
 	private static final String CHARSET_NAME = "us-ascii";
 
-	private SocketChannel channel;
+	/** Number of times to try sending a message before we give up in frustration. */
+	private static final int MAXIMUM_TRIES_SENDING = 100;
 
+	
+	
+	/** Channel over which we will send and receive messages. */
+	private final SocketChannel channel;
+	
 	private Selector selector;
 
 	private SelectionKey key;
@@ -45,21 +58,23 @@ public class ScanNetNB {
 
 	private Queue<Message> messages;
 
+
+
 	/**
-	 * Creates a new instance of this class. Since, by definition, this class takes
-	 * in input from the network, we need to supply the non-blocking Socket instance
-	 * from which we will read.
+	 * Creates a new instance of this class. Since, by definition, this class sends
+	 * output over the network, we need to supply the non-blocking Socket instance
+	 * to which we will write.
 	 * 
-	 * @param sockChan Non-blocking SocketChannel from which we will receive
-	 *                 communications.
+	 * @param sockChan Non-blocking SocketChannel instance to which we will send all
+	 *                 communication.
 	 */
-	public ScanNetNB(SocketChannel sockChan) {
+	public NetworkConnection(SocketChannel sockChan) {
+		// Remember the channel that we will be using.
+		channel = sockChan;
 		// Create the queue that will hold the messages received from over the network
 		messages = new ConcurrentLinkedQueue<>();
 		// Allocate the buffer we will use to read data
 		buff = ByteBuffer.allocate(BUFFER_SIZE);
-		// Remember the channel that we will be using.
-		channel = sockChan;
 		try {
 			// Open the selector to handle our non-blocking I/O
 			selector = Selector.open();
@@ -73,18 +88,37 @@ public class ScanNetNB {
 	}
 
 	/**
-	 * Creates a new instance of this class. Since, by definition, this class takes
-	 * in input from the network, we need to supply the non-blocking Socket instance
-	 * from which we will read.
+	 * Send a Message over the network. This method performs its actions by printing
+	 * the given Message over the SocketNB instance with which the PrintNetNB was
+	 * instantiated. This returns whether our attempt to send the message was
+	 * successful.
 	 * 
-	 * @param connection Non-blocking Socket instance from which we will receive
-	 *                   communications.
+	 * @param msg Message to be sent out over the network.
+	 * @return True if we successfully send this message; false otherwise.
 	 */
-	public ScanNetNB(SocketNB connection) {
-		// Get the socket channel from the SocketNB instance and go.
-		this(connection.getSocket());
+	public boolean sendMessage(Message msg) {
+		String str = msg.toString();
+		ByteBuffer wrapper = ByteBuffer.wrap(str.getBytes());
+		int bytesWritten = 0;
+		int attemptsRemaining = MAXIMUM_TRIES_SENDING;
+		while (wrapper.hasRemaining() && (attemptsRemaining > 0)) {
+			try {
+				attemptsRemaining--;
+				bytesWritten += channel.write(wrapper);
+			} catch (IOException e) {
+				// Show that this was unsuccessful
+				return false;
+			}
+		}
+		// Check to see if we were successful in our attempt to write the message
+		if (wrapper.hasRemaining()) {
+			ChatLogger.warning("WARNING: Sent only " + bytesWritten + " out of " + wrapper.limit()
+					+ " bytes -- dropping this user.");
+			return false;
+		}
+		return true;
 	}
-
+	
 	/**
 	 * Read in a new argument from the IM server.
 	 * 
