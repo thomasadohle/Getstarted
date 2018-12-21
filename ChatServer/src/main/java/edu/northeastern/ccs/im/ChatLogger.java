@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im;
 
 import java.io.IOException;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -28,7 +29,7 @@ public class ChatLogger {
    * Static initializations for this class.
    */
   static {
-    createFileHandler();
+    setMode(HandlerType.BOTH);
   }
 
   /**
@@ -36,24 +37,6 @@ public class ChatLogger {
    */
   private ChatLogger() {
     throw new IllegalStateException("ChatLogger not instantiable");
-  }
-
-  /**
-   * Makes a handler for the logger to use.
-   */
-  private static final void createFileHandler() {
-    Handler fileHandler;
-    try {
-      fileHandler = new FileHandler(PATH);
-      LOGGER.addHandler(fileHandler);
-      fileHandler.setLevel(Level.ALL);
-      LOGGER.setLevel(Level.ALL);
-      Formatter simpleFormatter = new SimpleFormatter();
-      fileHandler.setFormatter(simpleFormatter);
-      LOGGER.setUseParentHandlers(false);
-    } catch (IOException e) {
-      throw new IllegalStateException(e.getMessage());
-    }
   }
 
   /**
@@ -98,5 +81,95 @@ public class ChatLogger {
    */
   public static final void info(String msg) {
     write(Level.INFO, msg);
+  }
+
+  /**
+   * Toggles between the handler types.
+   * 
+   * @param type the type of handler to be used by the logger
+   */
+  public static void setMode(HandlerType type) {
+
+    switch (type.toString().toLowerCase()) {
+      case ("file"):
+        switchToFile();
+        break;
+      case ("console"):
+        switchToConsole();
+        break;
+      case ("both"):
+        switchToBoth();
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid handler type.");
+    }
+    LOGGER.setLevel(Level.ALL);
+    LOGGER.setUseParentHandlers(false);
+  }
+
+  /**
+   * Creates file Handler for the logger to use.
+   */
+  private static void switchToFile() {
+    Handler fileHandler;
+    try {
+      fileHandler = new FileHandler(PATH);
+      LOGGER.addHandler(fileHandler);
+      fileHandler.setLevel(Level.ALL);
+      Formatter simpleFormatter = new SimpleFormatter();
+      fileHandler.setFormatter(simpleFormatter);
+    } catch (IOException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  /**
+   * Creates console Handler for the logger to use.
+   */
+  private static void switchToConsole() {
+    Handler consoleHandler;
+    consoleHandler = new ConsoleHandler();
+    LOGGER.addHandler(consoleHandler);
+    consoleHandler.setLevel(Level.ALL);
+    Formatter simpleFormatter = new SimpleFormatter();
+    consoleHandler.setFormatter(simpleFormatter);
+  }
+
+  /**
+   * Creates file and console handlers for the logger to use.
+   */
+  private static void switchToBoth() {
+    switchToFile();
+    switchToConsole();
+  }
+
+  /**
+   * Private Enum class for Handler Types.
+   */
+  private enum HandlerType {
+    /** The file handler. */
+    FILE("File"),
+    /** The console handler. */
+    CONSOLE("Console"),
+    /** Both handlers. */
+    BOTH("Both");
+    /** The name of the handler type. */
+    private String type;
+
+    /**
+     * Private constructor for the enum.
+     * 
+     * @param abbrev the name of the handler type
+     */
+    private HandlerType(String abbrev) {
+      type = abbrev;
+    }
+
+    /**
+     * Converting the handler type to a String.
+     */
+    public String toString() {
+      return type;
+    }
   }
 }
