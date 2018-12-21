@@ -60,13 +60,13 @@ public class ChatLogger {
    * Writes to the logger.
    * 
    * @param lvl the level of severity of the message being logged
-   * @param obj the object/message being logged.
+   * @param msg the message being logged.
    * @return true if the message was logged, false otherwise
    */
-  private static final boolean write(Level lvl, Object obj) {
+  private static final boolean write(Level lvl, String msg) {
     boolean done = true;
     try {
-      String msg = String.valueOf(obj);
+//      String msg = String.valueOf(obj);
       LOGGER.log(lvl, msg);
     } catch (SecurityException ex) {
       done = false;
@@ -79,7 +79,7 @@ public class ChatLogger {
    * 
    * @param msg error message to be logged
    */
-  public static final void error(Object msg) {
+  public static final void error(String msg) {
     write(Level.SEVERE, msg);
   }
 
@@ -88,7 +88,7 @@ public class ChatLogger {
    * 
    * @param msg warning to be logged
    */
-  public static final void warning(Object msg) {
+  public static final void warning(String msg) {
     write(Level.WARNING, msg);
   }
 
@@ -97,7 +97,7 @@ public class ChatLogger {
    * 
    * @param msg message to be logged
    */
-  public static final void info(Object msg) {
+  public static final void info(String msg) {
     write(Level.INFO, msg);
   }
 }
