@@ -28,286 +28,288 @@ import edu.northeastern.ccs.im.NetworkConnection;
  */
 public class ClientRunnable implements Runnable {
 
-	/**
-	 * Number of milliseconds after which we terminate a client due to inactivity.
-	 * This is currently equal to 5 hours.
-	 */
-	private static final long TERMINATE_AFTER_INACTIVE_BUT_LOGGEDIN_IN_MS = 18000000;
+  /**
+   * Number of milliseconds after which we terminate a client due to inactivity.
+   * This is currently equal to 5 hours.
+   */
+  private static final long TERMINATE_AFTER_INACTIVE_BUT_LOGGEDIN_IN_MS = 18000000;
 
-	/**
-	 * Number of milliseconds after which we terminate a client due to inactivity.
-	 * This is currently equal to 5 hours.
-	 */
-	private static final long TERMINATE_AFTER_INACTIVE_INITIAL_IN_MS = 600000;
+  /**
+   * Number of milliseconds after which we terminate a client due to inactivity.
+   * This is currently equal to 5 hours.
+   */
+  private static final long TERMINATE_AFTER_INACTIVE_INITIAL_IN_MS = 600000;
 
-	/** Time at which the client should be terminated due to lack of activity. */
-	private GregorianCalendar terminateInactivity;
+  /** Time at which the client should be terminated due to lack of activity. */
+  private GregorianCalendar terminateInactivity;
 
-	/** Socket over which the conversation with the single client occurs. */
-	private final SocketChannel socket;
+  /** Socket over which the conversation with the single client occurs. */
+  private final SocketChannel socket;
 
-	/** Utility class which we will use to send and receive communication to this client. */
-	private NetworkConnection connection;
+  /**
+   * Utility class which we will use to send and receive communication to this
+   * client.
+   */
+  private NetworkConnection connection;
 
-	/** Id for the user for whom we use this ClientRunnable to communicate. */
-	private int userId;
+  /** Id for the user for whom we use this ClientRunnable to communicate. */
+  private int userId;
 
-	/** Name that the client used when connecting to the server. */
-	private String name;
+  /** Name that the client used when connecting to the server. */
+  private String name;
 
-	/**
-	 * Whether this client has been initialized, set its user name, and is ready to
-	 * receive messages.
-	 */
-	private boolean initialized;
+  /**
+   * Whether this client has been initialized, set its user name, and is ready to
+   * receive messages.
+   */
+  private boolean initialized;
 
-	/**
-	 * The future that is used to schedule the client for execution in the thread
-	 * pool.
-	 */
-	private ScheduledFuture<ClientRunnable> runnableMe;
+  /**
+   * The future that is used to schedule the client for execution in the thread
+   * pool.
+   */
+  private ScheduledFuture<ClientRunnable> runnableMe;
 
-	/** Collection of messages queued up to be sent to this client. */
-	private Queue<Message> waitingList;
+  /** Collection of messages queued up to be sent to this client. */
+  private Queue<Message> waitingList;
 
-	/**
-	 * Create a new thread with which we will communicate with this single client.
-	 * 
-	 * @param client SocketChannel over which we will communicate with this new
-	 *               client
-	 * @throws IOException Exception thrown if we have trouble completing this
-	 *                     connection
-	 */
-	public ClientRunnable(SocketChannel client) throws IOException {
-		// Set up the SocketChannel over which we will communicate.
-		socket = client;
-		socket.configureBlocking(false);
-		// Create the class we will use to send and receive communication
-		connection = new NetworkConnection(socket);
-		// Mark that we are not initialized
-		initialized = false;
-		// Create the queue of messages to be sent
-		waitingList = new ConcurrentLinkedQueue<>();
-		// Mark that the client is active now and start the timer until we
-		// terminate for inactivity.
-		terminateInactivity = new GregorianCalendar();
-		terminateInactivity
-				.setTimeInMillis(terminateInactivity.getTimeInMillis() + TERMINATE_AFTER_INACTIVE_INITIAL_IN_MS);
-	}
+  /**
+   * Create a new thread with which we will communicate with this single client.
+   * 
+   * @param client SocketChannel over which we will communicate with this new
+   *               client
+   * @throws IOException Exception thrown if we have trouble completing this
+   *                     connection
+   */
+  public ClientRunnable(SocketChannel client) throws IOException {
+    // Set up the SocketChannel over which we will communicate.
+    socket = client;
+    socket.configureBlocking(false);
+    // Create the class we will use to send and receive communication
+    connection = new NetworkConnection(socket);
+    // Mark that we are not initialized
+    initialized = false;
+    // Create the queue of messages to be sent
+    waitingList = new ConcurrentLinkedQueue<>();
+    // Mark that the client is active now and start the timer until we
+    // terminate for inactivity.
+    terminateInactivity = new GregorianCalendar();
+    terminateInactivity.setTimeInMillis(
+        terminateInactivity.getTimeInMillis() + TERMINATE_AFTER_INACTIVE_INITIAL_IN_MS);
+  }
 
-	/**
-	 * Check to see for an initialization attempt and process the message sent.
-	 */
-	private void checkForInitialization() {
-		// Check if there are any input messages to read
-		if (connection.hasNextMessage()) {
-			// If a message exists, try to use it to initialize the connection
-			Message msg = connection.nextMessage();
-			if (setUserName(msg.getName())) {
-				// Update the time until we terminate this client due to inactivity.
-				terminateInactivity.setTimeInMillis(
-						new GregorianCalendar().getTimeInMillis() + TERMINATE_AFTER_INACTIVE_INITIAL_IN_MS);
-				// Set that the client is initialized.
-				initialized = true;
-			} else {
-				initialized = false;
-			}
-		}
-	}
+  /**
+   * Check to see for an initialization attempt and process the message sent.
+   */
+  private void checkForInitialization() {
+    // Check if there are any input messages to read
+    if (connection.hasNextMessage()) {
+      // If a message exists, try to use it to initialize the connection
+      Message msg = connection.nextMessage();
+      if (setUserName(msg.getName())) {
+        // Update the time until we terminate this client due to inactivity.
+        terminateInactivity.setTimeInMillis(
+            new GregorianCalendar().getTimeInMillis() + TERMINATE_AFTER_INACTIVE_INITIAL_IN_MS);
+        // Set that the client is initialized.
+        initialized = true;
+      } else {
+        initialized = false;
+      }
+    }
+  }
 
-	/**
-	 * Check if the message is properly formed. At the moment, this means checking
-	 * that the identifier is set properly.
-	 * 
-	 * @param msg Message to be checked
-	 * @return True if message is correct; false otherwise
-	 */
-	private boolean messageChecks(Message msg) {
-		// Check that the message name matches.
-		return (msg.getName() != null) && (msg.getName().compareToIgnoreCase(getName()) == 0);
-	}
+  /**
+   * Check if the message is properly formed. At the moment, this means checking
+   * that the identifier is set properly.
+   * 
+   * @param msg Message to be checked
+   * @return True if message is correct; false otherwise
+   */
+  private boolean messageChecks(Message msg) {
+    // Check that the message name matches.
+    return (msg.getName() != null) && (msg.getName().compareToIgnoreCase(getName()) == 0);
+  }
 
-	/**
-	 * Immediately send this message to the client. This returns if we were
-	 * successful or not in our attempt to send the message.
-	 * 
-	 * @param message Message to be sent immediately.
-	 * @return True if we sent the message successfully; false otherwise.
-	 */
-	private boolean sendMessage(Message message) {
-		ChatLogger.info("\t" + message);
-		return connection.sendMessage(message);
-	}
+  /**
+   * Immediately send this message to the client. This returns if we were
+   * successful or not in our attempt to send the message.
+   * 
+   * @param message Message to be sent immediately.
+   * @return True if we sent the message successfully; false otherwise.
+   */
+  private boolean sendMessage(Message message) {
+    ChatLogger.info("\t" + message);
+    return connection.sendMessage(message);
+  }
 
-	/**
-	 * Try allowing this user to set his/her user name to the given username.
-	 * 
-	 * @param userName The new value to which we will try to set userName.
-	 * @return True if the username is deemed acceptable; false otherwise
-	 */
-	private boolean setUserName(String userName) {
-		// Now make sure this name is legal.
-		if (userName != null) {
-			// Optimistically set this users ID number.
-			setName(userName);
-			userId = hashCode();
-			return true;
-		}
-		// Clear this name; we cannot use it. *sigh*
-		userId = -1;
-		return false;
-	}
+  /**
+   * Try allowing this user to set his/her user name to the given username.
+   * 
+   * @param userName The new value to which we will try to set userName.
+   * @return True if the username is deemed acceptable; false otherwise
+   */
+  private boolean setUserName(String userName) {
+    // Now make sure this name is legal.
+    if (userName != null) {
+      // Optimistically set this users ID number.
+      setName(userName);
+      userId = hashCode();
+      return true;
+    }
+    // Clear this name; we cannot use it. *sigh*
+    userId = -1;
+    return false;
+  }
 
-	/**
-	 * Add the given message to this client to the queue of message to be sent to
-	 * the client.
-	 * 
-	 * @param message Complete message to be sent.
-	 */
-	public void enqueueMessage(Message message) {
-		waitingList.add(message);
-	}
+  /**
+   * Add the given message to this client to the queue of message to be sent to
+   * the client.
+   * 
+   * @param message Complete message to be sent.
+   */
+  public void enqueueMessage(Message message) {
+    waitingList.add(message);
+  }
 
-	/**
-	 * Get the name of the user for which this ClientRunnable was created.
-	 * 
-	 * @return Returns the name of this client.
-	 */
-	public String getName() {
-		return name;
-	}
+  /**
+   * Get the name of the user for which this ClientRunnable was created.
+   * 
+   * @return Returns the name of this client.
+   */
+  public String getName() {
+    return name;
+  }
 
-	/**
-	 * Set the name of the user for which this ClientRunnable was created.
-	 * 
-	 * @param name The name for which this ClientRunnable.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+  /**
+   * Set the name of the user for which this ClientRunnable was created.
+   * 
+   * @param name The name for which this ClientRunnable.
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	/**
-	 * Gets the name of the user for which this ClientRunnable was created.
-	 * 
-	 * @return Returns the current value of userName.
-	 */
-	public int getUserId() {
-		return userId;
-	}
+  /**
+   * Gets the name of the user for which this ClientRunnable was created.
+   * 
+   * @return Returns the current value of userName.
+   */
+  public int getUserId() {
+    return userId;
+  }
 
-	/**
-	 * Return if this thread has completed the initialization process with its
-	 * client and is read to receive messages.
-	 * 
-	 * @return True if this thread's client should be considered; false otherwise.
-	 */
-	public boolean isInitialized() {
-		return initialized;
-	}
+  /**
+   * Return if this thread has completed the initialization process with its
+   * client and is read to receive messages.
+   * 
+   * @return True if this thread's client should be considered; false otherwise.
+   */
+  public boolean isInitialized() {
+    return initialized;
+  }
 
-	/**
-	 * Perform the periodic actions needed to work with this client.
-	 * 
-	 * @see java.lang.Thread#run()
-	 */
-	public void run() {
-		boolean terminate = false;
-		// The client must be initialized before we can do anything else
-		if (!initialized) {
-			checkForInitialization();
-		} else {
-			try {
-				// Client has already been initialized, so we should first check
-				// if there are any input
-				// messages.
-				if (connection.hasNextMessage()) {
-					// Get the next message
-					Message msg = connection.nextMessage();
-					// Update the time until we terminate the client for
-					// inactivity.
-					terminateInactivity.setTimeInMillis(
-							new GregorianCalendar().getTimeInMillis() + TERMINATE_AFTER_INACTIVE_BUT_LOGGEDIN_IN_MS);
-					// If the message is a broadcast message, send it out
-					if (msg.isDisplayMessage()) {
-						// Check if the message is legal formatted
-						if (messageChecks(msg)) {
-							// Check for our "special messages"
-							if (msg.isBroadcastMessage()) {
-								// Check for our "special messages"
-									Prattle.broadcastMessage(msg);
-							}
-						} else {
-							Message sendMsg;
-							sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
-									"Last message was rejected because it specified an incorrect user name.");
-							enqueueMessage(sendMsg);
-						}
-					} else if (msg.terminate()) {
-						// Stop sending the poor client message.
-						terminate = true;
-						// Reply with a quit message.
-						enqueueMessage(Message.makeQuitMessage(name));
-					}
-					// Otherwise, ignore it (for now).
-				}
+  /**
+   * Perform the periodic actions needed to work with this client.
+   * 
+   * @see java.lang.Thread#run()
+   */
+  public void run() {
+    boolean terminate = false;
+    // The client must be initialized before we can do anything else
+    if (!initialized) {
+      checkForInitialization();
+    } else {
+      try {
+        // Client has already been initialized, so we should first check
+        // if there are any input
+        // messages.
+        if (connection.hasNextMessage()) {
+          // Get the next message
+          Message msg = connection.nextMessage();
+          // Update the time until we terminate the client for
+          // inactivity.
+          terminateInactivity.setTimeInMillis(new GregorianCalendar().getTimeInMillis()
+              + TERMINATE_AFTER_INACTIVE_BUT_LOGGEDIN_IN_MS);
+          // If the message is a broadcast message, send it out
+          if (msg.terminate()) {
+            // Stop sending the poor client message.
+            terminate = true;
+            // Reply with a quit message.
+            enqueueMessage(Message.makeQuitMessage(name));
+          } else {
+            // Check if the message is legal formatted
+            if (messageChecks(msg)) {
+              // Check for our "special messages"
+              if (msg.isBroadcastMessage()) {
+                // Check for our "special messages"
+                Prattle.broadcastMessage(msg);
+              }
+            } else {
+              Message sendMsg;
+              sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
+                  "Last message was rejected because it specified an incorrect user name.");
+              enqueueMessage(sendMsg);
+            }
+          }
+        }
 
-				// Check to make sure we have a client to send to.
-				boolean keepAlive = true;
-				if (!waitingList.isEmpty()) {
-					keepAlive = false;
-					// Send out all of the message that have been added to the
-					// queue.
-					do {
-						Message msg = waitingList.remove();
-						boolean sentGood = sendMessage(msg);
-						keepAlive |= sentGood;
-					} while (!waitingList.isEmpty());
-				}
-				terminate |= !keepAlive;
-			} finally {
-				// When it is appropriate, terminate the current client.
-				if (terminate) {
-					terminateClient();
-				}
-			}
-		}
-		// Finally, check if this client have been inactive for too long and,
-		// when they have, terminate
-		// the client.
-		if (!terminate && terminateInactivity.before(new GregorianCalendar())) {
-			ChatLogger.error("Timing out or forcing off a user " + name);
-			terminateClient();
-		}
-	}
+        // Check to make sure we have a client to send to.
+        boolean keepAlive = true;
+        if (!waitingList.isEmpty()) {
+          keepAlive = false;
+          // Send out all of the message that have been added to the
+          // queue.
+          do {
+            Message msg = waitingList.remove();
+            boolean sentGood = sendMessage(msg);
+            keepAlive |= sentGood;
+          } while (!waitingList.isEmpty());
+        }
+        terminate |= !keepAlive;
+      } finally {
+        // When it is appropriate, terminate the current client.
+        if (terminate) {
+          terminateClient();
+        }
+      }
+    }
+    // Finally, check if this client have been inactive for too long and,
+    // when they have, terminate
+    // the client.
+    if (!terminate && terminateInactivity.before(new GregorianCalendar())) {
+      ChatLogger.error("Timing out or forcing off a user " + name);
+      terminateClient();
+    }
+  }
 
-	/**
-	 * Store the object used by this client runnable to control when it is scheduled
-	 * for execution in the thread pool.
-	 * 
-	 * @param future Instance controlling when the runnable is executed from within
-	 *               the thread pool.
-	 */
-	public void setFuture(ScheduledFuture<ClientRunnable> future) {
-		runnableMe = future;
-	}
+  /**
+   * Store the object used by this client runnable to control when it is scheduled
+   * for execution in the thread pool.
+   * 
+   * @param future Instance controlling when the runnable is executed from within
+   *               the thread pool.
+   */
+  public void setFuture(ScheduledFuture<ClientRunnable> future) {
+    runnableMe = future;
+  }
 
-	/**
-	 * Terminate a client that we wish to remove. This termination could happen at
-	 * the client's request or due to system need.
-	 */
-	public void terminateClient() {
-		try {
-			// Once the communication is done, close this connection.
-			connection.close();
-			socket.close();
-		} catch (IOException e) {
-			// If we have an IOException, ignore the problem
-			ChatLogger.error(e.toString());
-		} finally {
-			// Remove the client from our client listing.
-			Prattle.removeClient(this);
-			// And remove the client from our client pool.
-			runnableMe.cancel(false);
-		}
-	}
+  /**
+   * Terminate a client that we wish to remove. This termination could happen at
+   * the client's request or due to system need.
+   */
+  public void terminateClient() {
+    try {
+      // Once the communication is done, close this connection.
+      connection.close();
+      socket.close();
+    } catch (IOException e) {
+      // If we have an IOException, ignore the problem
+      ChatLogger.error(e.toString());
+    } finally {
+      // Remove the client from our client listing.
+      Prattle.removeClient(this);
+      // And remove the client from our client pool.
+      runnableMe.cancel(false);
+    }
+  }
 }

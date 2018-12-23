@@ -1,41 +1,37 @@
 package edu.northeastern.ccs.im;
 
 public enum MessageType {
-	/**
-	 * Message sent by the user attempting to login using a specified username.
-	 */
-	HELLO("HLO"),
-	/** Message sent by the server acknowledging a successful log in. */
-	ACKNOWLEDGE("ACK"),
-	/** Message sent by the server rejecting a login attempt. */
-	NO_ACKNOWLEDGE("NAK"),
-	/**
-	 * Message sent by the user to start the logging out process and sent by the
-	 * server once the logout process completes.
-	 */
-	QUIT("BYE"),
-	/** Message whose contents is broadcast to all connected users. */
-	BROADCAST("BCT");
+  /**
+   * Message sent by the user attempting to login using a specified username.
+   */
+  HELLO("HLO"),
+  /**
+   * Message sent by the user to start the logging out process and sent by the
+   * server once the logout process completes.
+   */
+  QUIT("BYE"),
+  /** Message whose contents is broadcast to all connected users. */
+  BROADCAST("BCT");
 
-	/** Store the short name of this message type. */
-	private String tla;
+  /** Store the short name of this message type. */
+  private String tla;
 
-	/**
-	 * Define the message type and specify its short name.
-	 * 
-	 * @param abbrev Short name of this message type, as a String.
-	 */
-	private MessageType(String abbrev) {
-		tla = abbrev;
-	}
+  /**
+   * Define the message type and specify its short name.
+   * 
+   * @param abbrev Short name of this message type, as a String.
+   */
+  private MessageType(String abbrev) {
+    tla = abbrev;
+  }
 
-	/**
-	 * Return a representation of this Message as a String.
-	 * 
-	 * @return Three letter abbreviation for this type of message.
-	 */
-	@Override
-	public String toString() {
-		return tla;
-	}
+  /**
+   * Return a representation of this Message as a String.
+   * 
+   * @return Three letter abbreviation for this type of message.
+   */
+  @Override
+  public String toString() {
+    return tla;
+  }
 }
