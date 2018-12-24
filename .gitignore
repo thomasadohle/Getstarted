@@ -5,6 +5,7 @@
 *.lck
 *.log
 ##### eclipse files
+.checkstyle
 .classpath
 .metadata/
 .project

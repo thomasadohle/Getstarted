@@ -16,18 +16,27 @@ package edu.northeastern.ccs.im.server;
  */
 public class ServerConstants {
 
-  /** The port number to listen on. */
-  protected static final int PORT = 4545;
+	/** The port number to listen on. */
+	protected static final int PORT = 4545;
 
-  /** Name of the private user who broadcasts interesting responses. */
-  protected static final String SERVER_NAME = "Prattle";
+	/** Amount of time we should wait for a signal to arrive. */
+	protected static final int DELAY_IN_MS = 50;
 
-  /** Name of the private user who handles bad requests. */
-  protected static final String BOUNCER_ID = "Bouncer";
+	/** Number of threads available in our thread pool. */
+	protected static final int THREAD_POOL_SIZE = 20;
 
-  /** Private constructor to prevent anyone from creating one of these. */
-  private ServerConstants() {
-    /* does nothing. */
-  }
+	/** Delay between times the thread pool runs the client check. */
+	protected static final int CLIENT_CHECK_DELAY = 200;
+
+	/** Name of the private user who broadcasts interesting responses. */
+	protected static final String SERVER_NAME = "Prattle";
+
+	/** Name of the private user who handles bad requests. */
+	protected static final String BOUNCER_ID = "Bouncer";
+
+	/** Private constructor to prevent anyone from creating one of these. */
+	private ServerConstants() {
+		/* does nothing. */
+	}
 
 }
