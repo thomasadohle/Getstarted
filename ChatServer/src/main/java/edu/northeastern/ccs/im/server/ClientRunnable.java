@@ -1,7 +1,5 @@
 package edu.northeastern.ccs.im.server;
 
-import java.io.IOException;
-import java.nio.channels.SocketChannel;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Queue;
@@ -28,22 +26,6 @@ import edu.northeastern.ccs.im.NetworkConnection;
  * @version 1.3
  */
 public class ClientRunnable implements Runnable {
-
-	/**
-	 * Number of milliseconds after which we terminate a client due to inactivity.
-	 * This is currently equal to 5 hours.
-	 */
-	private static final long TERMINATE_AFTER_INACTIVE_BUT_LOGGEDIN_IN_MS = 18000000;
-
-	/**
-	 * Number of milliseconds after which we terminate a client due to inactivity.
-	 * This is currently equal to 5 hours.
-	 */
-	private static final long TERMINATE_AFTER_INACTIVE_INITIAL_IN_MS = 600000;
-
-	/** Time at which the client should be terminated due to lack of activity. */
-	private GregorianCalendar terminateInactivity;
-
 	/**
 	 * Utility class which we will use to send and receive communication to this
 	 * client.
@@ -66,6 +48,9 @@ public class ClientRunnable implements Runnable {
      * Whether this client has been terminated, either because he quit or due to prolonged inactivity.
      */
 	private boolean terminate;
+	
+	/** The timer that keeps track of the clients activity. */
+	private ClientTimer timer;
 
 	/**
 	 * The future that is used to schedule the client for execution in the thread
@@ -92,9 +77,7 @@ public class ClientRunnable implements Runnable {
 		waitingList = new ConcurrentLinkedQueue<>();
 		// Mark that the client is active now and start the timer until we
 		// terminate for inactivity.
-		terminateInactivity = new GregorianCalendar();
-		terminateInactivity
-				.setTimeInMillis(terminateInactivity.getTimeInMillis() + TERMINATE_AFTER_INACTIVE_INITIAL_IN_MS);
+		timer = new ClientTimer();
 	}
 
 	/**
@@ -108,8 +91,7 @@ public class ClientRunnable implements Runnable {
 			Message msg = messageIter.next();
 			if (setUserName(msg.getName())) {
 				// Update the time until we terminate this client due to inactivity.
-				terminateInactivity.setTimeInMillis(
-						new GregorianCalendar().getTimeInMillis() + TERMINATE_AFTER_INACTIVE_INITIAL_IN_MS);
+				timer.updateAfterInitialization();
 				// Set that the client is initialized.
 				initialized = true;
 			} else {
@@ -231,8 +213,7 @@ public class ClientRunnable implements Runnable {
 					Message msg = messageIter.next();
 					// Update the time until we terminate the client for
 					// inactivity.
-					terminateInactivity.setTimeInMillis(
-							new GregorianCalendar().getTimeInMillis() + TERMINATE_AFTER_INACTIVE_BUT_LOGGEDIN_IN_MS);
+					timer.updateAfterActivity();
 					// If the message is a broadcast message, send it out
 					if (msg.terminate()) {
 						// Stop sending the poor client message.
@@ -279,7 +260,7 @@ public class ClientRunnable implements Runnable {
 		// Finally, check if this client have been inactive for too long and,
 		// when they have, terminate
 		// the client.
-		if (!terminate && terminateInactivity.before(new GregorianCalendar())) {
+		if (!terminate && timer.before(new GregorianCalendar())) {
 			ChatLogger.error("Timing out or forcing off a user " + name);
 			terminateClient();
 		}
