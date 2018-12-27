@@ -1,6 +1,5 @@
 package edu.northeastern.ccs.im.server;
 
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -260,7 +259,7 @@ public class ClientRunnable implements Runnable {
 		// Finally, check if this client have been inactive for too long and,
 		// when they have, terminate
 		// the client.
-		if (!terminate && timer.before(new GregorianCalendar())) {
+		if (!terminate && timer.isBehind()) {
 			ChatLogger.error("Timing out or forcing off a user " + name);
 			terminateClient();
 		}

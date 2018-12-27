@@ -51,11 +51,10 @@ public class ClientTimer {
   }
   
   /**
-   * Checks whether the calendar represents a time before the time value passed in.
-   * @param time    new value of time to check against
+   * Checks whether the calendar represents a time before the current time.
    * @return    true if the time passed in is later than the current value of calendar, false otherwise.
    */
-  public boolean before (GregorianCalendar time) {
-    return calendar.before(time);
+  public boolean isBehind () {
+    return calendar.before(new GregorianCalendar());
   }
 }
