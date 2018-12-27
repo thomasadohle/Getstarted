@@ -125,34 +125,6 @@ public class NetworkConnection implements Iterable<Message> {
 	}
 
 	/**
-	 * Returns true if there is another line of input from this instance. This
-	 * method will NOT block while waiting for input. This class does not advance
-	 * past any input.
-	 * 
-	 * @return True if and only if this instance of the class has another line of
-	 *         input
-	 * @see java.util.Scanner#hasNextLine()
-	 */
-	public boolean hasNextMessage() {
-	  Iterator<Message> messageIter = this.iterator();
-      return messageIter.hasNext();
-	}
-
-	/**
-	 * Advances past the current line and returns the line that was read. This
-	 * method returns the rest of the current line, excluding any line separator at
-	 * the end. The position in the input is set to the beginning of the next line.
-	 * @throws NoSuchElementException Exception thrown when hasNextLine returns
-     * false.
-	 * @return String containing the line that was skipped
-	 * @see java.util.Scanner#nextLine()
-	 */
-	public Message nextMessage() {
-		Iterator<Message> messageIter = this.iterator();
-		return messageIter.next();
-	}
-
-	/**
 	 * Close this client network connection.
 	 */
 	public void close() {

@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.server;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
@@ -103,9 +104,10 @@ public class ClientRunnable implements Runnable {
 	 */
 	private void checkForInitialization() {
 		// Check if there are any input messages to read
-		if (connection.hasNextMessage()) {
+	    Iterator<Message> messageIter = connection.iterator();
+		if (messageIter.hasNext()) {
 			// If a message exists, try to use it to initialize the connection
-			Message msg = connection.nextMessage();
+			Message msg = messageIter.next();
 			if (setUserName(msg.getName())) {
 				// Update the time until we terminate this client due to inactivity.
 				terminateInactivity.setTimeInMillis(
@@ -226,9 +228,10 @@ public class ClientRunnable implements Runnable {
 				// Client has already been initialized, so we should first check
 				// if there are any input
 				// messages.
-				if (connection.hasNextMessage()) {
+			    Iterator<Message> messageIter = connection.iterator();
+				if (messageIter.hasNext()) {
 					// Get the next message
-					Message msg = connection.nextMessage();
+					Message msg = messageIter.next();
 					// Update the time until we terminate the client for
 					// inactivity.
 					terminateInactivity.setTimeInMillis(
