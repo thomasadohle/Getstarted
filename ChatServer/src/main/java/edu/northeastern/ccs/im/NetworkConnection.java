@@ -125,44 +125,6 @@ public class NetworkConnection implements Iterable<Message> {
 	}
 
 	/**
-	 * Read in a new argument from the IM server.
-	 * 
-	 * @param charBuffer Buffer holding text from over the network.
-	 * @return String holding the next argument sent over the network.
-	 */
-	private String readArgument(CharBuffer charBuffer) {
-		String result = null;
-		// Compute the current position in the buffer
-		int pos = charBuffer.position();
-		// Compute the length of this argument
-		int length = 0;
-		// Track the number of locations visited.
-		int seen = 0;
-		// Assert that this character is a digit representing the length of the first
-		// argument
-		assert Character.isDigit(charBuffer.get(pos));
-		// Now read in the length of the first argument
-		while (Character.isDigit(charBuffer.get(pos))) {
-			// My quick-and-dirty numeric converter
-			length = length * DECIMAL_RADIX;
-			length += Character.digit(charBuffer.get(pos), DECIMAL_RADIX);
-			// Move to the next character
-			pos += 1;
-			seen += 1;
-		}
-		seen += 1;
-		if (length == 0) {
-			// Update our position
-			charBuffer.position(pos);
-		} else {
-			// Length is greater than 0 so result should be something other than null
-			result = charBuffer.subSequence(seen, length + seen).toString();
-			charBuffer.position(pos + length);
-		}
-		return result;
-	}
-
-	/**
 	 * Returns true if there is another line of input from this instance. This
 	 * method will NOT block while waiting for input. This class does not advance
 	 * past any input.
@@ -288,6 +250,43 @@ public class NetworkConnection implements Iterable<Message> {
 	      ChatLogger.info(msg.toString());
 	      return msg;
 	    }
+	    
+	    /**
+	     * Read in a new argument from the IM server.
+	     * 
+	     * @param charBuffer Buffer holding text from over the network.
+	     * @return String holding the next argument sent over the network.
+	     */
+	    private String readArgument(CharBuffer charBuffer) {
+	        String result = null;
+	        // Compute the current position in the buffer
+	        int pos = charBuffer.position();
+	        // Compute the length of this argument
+	        int length = 0;
+	        // Track the number of locations visited.
+	        int seen = 0;
+	        // Assert that this character is a digit representing the length of the first
+	        // argument
+	        assert Character.isDigit(charBuffer.get(pos));
+	        // Now read in the length of the first argument
+	        while (Character.isDigit(charBuffer.get(pos))) {
+	            // My quick-and-dirty numeric converter
+	            length = length * DECIMAL_RADIX;
+	            length += Character.digit(charBuffer.get(pos), DECIMAL_RADIX);
+	            // Move to the next character
+	            pos += 1;
+	            seen += 1;
+	        }
+	        seen += 1;
+	        if (length == 0) {
+	            // Update our position
+	            charBuffer.position(pos);
+	        } else {
+	            // Length is greater than 0 so result should be something other than null
+	            result = charBuffer.subSequence(seen, length + seen).toString();
+	            charBuffer.position(pos + length);
+	        }
+	        return result;
+	    }
 	  }
-	
 }
