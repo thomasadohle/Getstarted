@@ -71,10 +71,14 @@ public class NetworkConnection implements Iterable<Message> {
 	 * 
 	 * @param sockChan Non-blocking SocketChannel instance to which we will send all
 	 *                 communication.
+	 * @throws IOException Exception thrown if we have trouble completing this
+     *                     connection
 	 */
-	public NetworkConnection(SocketChannel sockChan) {
+	public NetworkConnection(SocketChannel sockChan) throws IOException {
 		// Remember the channel that we will be using.
+	   // Set up the SocketChannel over which we will communicate.
 		channel = sockChan;
+		channel.configureBlocking(false);
 		// Create the queue that will hold the messages received from over the network
 		messages = new ConcurrentLinkedQueue<>();
 		// Allocate the buffer we will use to read data
@@ -130,6 +134,7 @@ public class NetworkConnection implements Iterable<Message> {
 	public void close() {
 		try {
 			selector.close();
+			channel.close();
 		} catch (IOException e) {
 			ChatLogger.error("Caught exception: " + e.toString());
 			assert false;

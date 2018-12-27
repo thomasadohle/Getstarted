@@ -44,9 +44,6 @@ public class ClientRunnable implements Runnable {
 	/** Time at which the client should be terminated due to lack of activity. */
 	private GregorianCalendar terminateInactivity;
 
-	/** Socket over which the conversation with the single client occurs. */
-	private final SocketChannel socket;
-
 	/**
 	 * Utility class which we will use to send and receive communication to this
 	 * client.
@@ -64,6 +61,11 @@ public class ClientRunnable implements Runnable {
 	 * receive messages.
 	 */
 	private boolean initialized;
+	
+	/**
+     * Whether this client has been terminated, either because he quit or due to prolonged inactivity.
+     */
+	private boolean terminate;
 
 	/**
 	 * The future that is used to schedule the client for execution in the thread
@@ -77,19 +79,15 @@ public class ClientRunnable implements Runnable {
 	/**
 	 * Create a new thread with which we will communicate with this single client.
 	 * 
-	 * @param client SocketChannel over which we will communicate with this new
-	 *               client
-	 * @throws IOException Exception thrown if we have trouble completing this
-	 *                     connection
+	 * @param network NetworkConnection used by this new client
 	 */
-	public ClientRunnable(SocketChannel client) throws IOException {
-		// Set up the SocketChannel over which we will communicate.
-		socket = client;
-		socket.configureBlocking(false);
+	public ClientRunnable(NetworkConnection network) {
 		// Create the class we will use to send and receive communication
-		connection = new NetworkConnection(socket);
+		connection = network;
 		// Mark that we are not initialized
 		initialized = false;
+		// Mark that we are not terminated
+        terminate = false;
 		// Create the queue of messages to be sent
 		waitingList = new ConcurrentLinkedQueue<>();
 		// Mark that the client is active now and start the timer until we
@@ -219,7 +217,6 @@ public class ClientRunnable implements Runnable {
 	 * @see java.lang.Thread#run()
 	 */
 	public void run() {
-		boolean terminate = false;
 		// The client must be initialized before we can do anything else
 		if (!initialized) {
 			checkForInitialization();
@@ -304,18 +301,11 @@ public class ClientRunnable implements Runnable {
 	 * the client's request or due to system need.
 	 */
 	public void terminateClient() {
-		try {
-			// Once the communication is done, close this connection.
-			connection.close();
-			socket.close();
-		} catch (IOException e) {
-			// If we have an IOException, ignore the problem
-			ChatLogger.error(e.toString());
-		} finally {
+		    //Once the communication is done, close this connection.
+		    connection.close();
 			// Remove the client from our client listing.
 			Prattle.removeClient(this);
 			// And remove the client from our client pool.
 			runnableMe.cancel(false);
-		}
 	}
 }
