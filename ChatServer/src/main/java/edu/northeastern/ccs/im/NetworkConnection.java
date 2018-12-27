@@ -8,6 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -232,14 +233,14 @@ public class NetworkConnection {
 	 * method returns the rest of the current line, excluding any line separator at
 	 * the end. The position in the input is set to the beginning of the next line.
 	 * 
-	 * @throws NextDoesNotExistException Exception thrown when hasNextLine returns
+	 * @throws NoSuchElementException Exception thrown when hasNextLine returns
 	 *                                   false.
 	 * @return String containing the line that was skipped
 	 * @see java.util.Scanner#nextLine()
 	 */
 	public Message nextMessage() {
 		if (messages.isEmpty()) {
-			throw new NextDoesNotExistException("No next line has been typed in at the keyboard");
+			throw new NoSuchElementException("No next line has been typed in at the keyboard");
 		}
 		Message msg = messages.remove();
 		ChatLogger.info(msg.toString());
