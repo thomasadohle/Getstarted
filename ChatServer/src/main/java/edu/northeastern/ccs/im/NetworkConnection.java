@@ -8,6 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -26,7 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * 
  * @version 1.4
  */
-public class NetworkConnection {
+public class NetworkConnection implements Iterable<Message> {
 
 	/** The size of the incoming buffer. */
 	private static final int BUFFER_SIZE = 64 * 1024;
@@ -171,80 +172,22 @@ public class NetworkConnection {
 	 * @see java.util.Scanner#hasNextLine()
 	 */
 	public boolean hasNextMessage() {
-		boolean result = false;
-		try {
-			// If we have messages waiting for us, return true.
-			if (!messages.isEmpty()) {
-				result = true;
-			}
-			// Otherwise, check if we can read in at least one new message
-			else if (selector.selectNow() != 0) {
-				assert key.isReadable();
-				// Read in the next set of commands from the channel.
-				channel.read(buff);
-				selector.selectedKeys().remove(key);
-				buff.flip();
-				// Create a decoder which will convert our traffic to something useful
-				Charset charset = Charset.forName(CHARSET_NAME);
-				CharsetDecoder decoder = charset.newDecoder();
-				// Convert the buffer to a format that we can actually use.
-				CharBuffer charBuffer = decoder.decode(buff);
-				// get rid of any extra whitespace at the beginning
-				// Start scanning the buffer for any and all messages.
-				int start = 0;
-				// Scan through the entire buffer; check that we have the minimum message size
-				while ((start + MIN_MESSAGE_LENGTH) <= charBuffer.limit()) {
-					// If this is not the first message, skip extra space.
-					if (start != 0) {
-						charBuffer.position(start);
-					}
-					// First read in the handle
-					final String handle = charBuffer.subSequence(0, HANDLE_LENGTH).toString();
-					// Skip past the handle
-					charBuffer.position(start + HANDLE_LENGTH + 1);
-					// Read the first argument containing the sender's name
-					final String sender = readArgument(charBuffer);
-					// Skip past the leading space
-					charBuffer.position(charBuffer.position() + 2);
-					// Read in the second argument containing the message
-					final String message = readArgument(charBuffer);
-					// Add this message into our queue
-					Message newMsg = Message.makeMessage(handle, sender, message);
-					messages.add(newMsg);
-					// And move the position to the start of the next character
-					start = charBuffer.position() + 1;
-				}
-				// Move any read messages out of the buffer so that we can add to the end.
-				buff.position(start);
-				// Move all of the remaining data to the start of the buffer.
-				buff.compact();
-				result = true;
-			}
-		} catch (IOException ioe) {
-			// For the moment, we will cover up this exception and hope it never occurs.
-			assert false;
-		}
-		// Do we now have any messages?
-		return result;
+	  Iterator<Message> messageIter = this.iterator();
+      return messageIter.hasNext();
 	}
 
 	/**
 	 * Advances past the current line and returns the line that was read. This
 	 * method returns the rest of the current line, excluding any line separator at
 	 * the end. The position in the input is set to the beginning of the next line.
-	 * 
 	 * @throws NoSuchElementException Exception thrown when hasNextLine returns
-	 *                                   false.
+     * false.
 	 * @return String containing the line that was skipped
 	 * @see java.util.Scanner#nextLine()
 	 */
 	public Message nextMessage() {
-		if (messages.isEmpty()) {
-			throw new NoSuchElementException("No next line has been typed in at the keyboard");
-		}
-		Message msg = messages.remove();
-		ChatLogger.info(msg.toString());
-		return msg;
+		Iterator<Message> messageIter = this.iterator();
+		return messageIter.next();
 	}
 
 	/**
@@ -258,4 +201,93 @@ public class NetworkConnection {
 			assert false;
 		}
 	}
+	
+	  @Override
+	  public Iterator<Message> iterator() {
+	    return new MessageIterator();
+	  }
+
+	  /**
+	   * Private class that helps iterate over a Network Connection.
+	   * 
+	   * @author Riya Nadkarni
+	   * @version 12-27-2018
+	   */
+	  private class MessageIterator implements Iterator<Message> {
+
+	    /** Default constructor. */
+	    public MessageIterator() {
+	      // nothing to do here
+	    }
+
+	    @Override
+	    public boolean hasNext() {
+	      boolean result = false;
+	        try {
+	            // If we have messages waiting for us, return true.
+	            if (!messages.isEmpty()) {
+	                result = true;
+	            }
+	            // Otherwise, check if we can read in at least one new message
+	            else if (selector.selectNow() != 0) {
+	                assert key.isReadable();
+	                // Read in the next set of commands from the channel.
+	                channel.read(buff);
+	                selector.selectedKeys().remove(key);
+	                buff.flip();
+	                // Create a decoder which will convert our traffic to something useful
+	                Charset charset = Charset.forName(CHARSET_NAME);
+	                CharsetDecoder decoder = charset.newDecoder();
+	                // Convert the buffer to a format that we can actually use.
+	                CharBuffer charBuffer = decoder.decode(buff);
+	                // get rid of any extra whitespace at the beginning
+	                // Start scanning the buffer for any and all messages.
+	                int start = 0;
+	                // Scan through the entire buffer; check that we have the minimum message size
+	                while ((start + MIN_MESSAGE_LENGTH) <= charBuffer.limit()) {
+	                    // If this is not the first message, skip extra space.
+	                    if (start != 0) {
+	                        charBuffer.position(start);
+	                    }
+	                    // First read in the handle
+	                    final String handle = charBuffer.subSequence(0, HANDLE_LENGTH).toString();
+	                    // Skip past the handle
+	                    charBuffer.position(start + HANDLE_LENGTH + 1);
+	                    // Read the first argument containing the sender's name
+	                    final String sender = readArgument(charBuffer);
+	                    // Skip past the leading space
+	                    charBuffer.position(charBuffer.position() + 2);
+	                    // Read in the second argument containing the message
+	                    final String message = readArgument(charBuffer);
+	                    // Add this message into our queue
+	                    Message newMsg = Message.makeMessage(handle, sender, message);
+	                    messages.add(newMsg);
+	                    // And move the position to the start of the next character
+	                    start = charBuffer.position() + 1;
+	                }
+	                // Move any read messages out of the buffer so that we can add to the end.
+	                buff.position(start);
+	                // Move all of the remaining data to the start of the buffer.
+	                buff.compact();
+	                result = true;
+	            }
+	        } catch (IOException ioe) {
+	            // For the moment, we will cover up this exception and hope it never occurs.
+	            assert false;
+	        }
+	        // Do we now have any messages?
+	        return result;
+	    }
+	    
+	    @Override
+	    public Message next() {
+	      if (messages.isEmpty()) {
+	        throw new NoSuchElementException("No next line has been typed in at the keyboard");
+	      }
+	      Message msg = messages.remove();
+	      ChatLogger.info(msg.toString());
+	      return msg;
+	    }
+	  }
+	
 }
