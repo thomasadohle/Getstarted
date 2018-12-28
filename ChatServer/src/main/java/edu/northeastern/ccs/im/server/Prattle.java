@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
+import edu.northeastern.ccs.im.NetworkConnection;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
@@ -147,7 +148,8 @@ public abstract class Prattle {
 			SocketChannel socket = serverSocket.accept();
 			// Make sure we have a connection to work with.
 			if (socket != null) {
-				ClientRunnable tt = new ClientRunnable(socket);
+			    NetworkConnection connection = new NetworkConnection(socket);
+				ClientRunnable tt = new ClientRunnable(connection);
 				// Add the thread to the queue of active threads
 				active.add(tt);
 				// Have the client executed by our pool of threads.
