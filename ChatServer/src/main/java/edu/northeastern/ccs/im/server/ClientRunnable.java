@@ -203,52 +203,8 @@ public class ClientRunnable implements Runnable {
 			checkForInitialization();
 		} else {
 			try {
-				// Client has already been initialized, so we should first check
-				// if there are any input
-				// messages.
-			    Iterator<Message> messageIter = connection.iterator();
-				if (messageIter.hasNext()) {
-					// Get the next message
-					Message msg = messageIter.next();
-					// Update the time until we terminate the client for
-					// inactivity.
-					timer.updateAfterActivity();
-					// If the message is a broadcast message, send it out
-					if (msg.terminate()) {
-						// Stop sending the poor client message.
-						terminate = true;
-						// Reply with a quit message.
-						enqueueMessage(Message.makeQuitMessage(name));
-					} else {
-						// Check if the message is legal formatted
-						if (messageChecks(msg)) {
-							// Check for our "special messages"
-							if (msg.isBroadcastMessage()) {
-								// Check for our "special messages"
-								Prattle.broadcastMessage(msg);
-							}
-						} else {
-							Message sendMsg;
-							sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
-									"Last message was rejected because it specified an incorrect user name.");
-							enqueueMessage(sendMsg);
-						}
-					}
-				}
-
-				// Check to make sure we have a client to send to.
-				boolean keepAlive = true;
-				if (!waitingList.isEmpty()) {
-					keepAlive = false;
-					// Send out all of the message that have been added to the
-					// queue.
-					do {
-						Message msg = waitingList.remove();
-						boolean sentGood = sendMessage(msg);
-						keepAlive |= sentGood;
-					} while (!waitingList.isEmpty());
-				}
-				terminate |= !keepAlive;
+				handleIncomingMessages();
+				handleOutgoingMessages();
 			} finally {
 				// When it is appropriate, terminate the current client.
 				if (terminate) {
@@ -264,8 +220,65 @@ public class ClientRunnable implements Runnable {
 			terminateClient();
 		}
 	}
+	
+	/**
+     * Checks incoming messages and performs appropriate actions based on the type of message.
+     */
+    public void handleIncomingMessages() {
+    // Client has already been initialized, so we should first check
+      // if there are any input
+      // messages.
+      Iterator<Message> messageIter = connection.iterator();
+      if (messageIter.hasNext()) {
+          // Get the next message
+          Message msg = messageIter.next();
+          // Update the time until we terminate the client for
+          // inactivity.
+          timer.updateAfterActivity();
+          // If the message is a broadcast message, send it out
+          if (msg.terminate()) {
+              // Stop sending the poor client message.
+              terminate = true;
+              // Reply with a quit message.
+              enqueueMessage(Message.makeQuitMessage(name));
+          } else {
+              // Check if the message is legal formatted
+              if (messageChecks(msg)) {
+                  // Check for our "special messages"
+                  if (msg.isBroadcastMessage()) {
+                      // Check for our "special messages"
+                      Prattle.broadcastMessage(msg);
+                  }
+              } else {
+                  Message sendMsg;
+                  sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
+                          "Last message was rejected because it specified an incorrect user name.");
+                  enqueueMessage(sendMsg);
+              }
+          }
+      }
+  }
 
 	/**
+	 * Sends the enqueued messages to the printer and makes sure they were sent out.
+	 */
+	public void handleOutgoingMessages() {
+	// Check to make sure we have a client to send to.
+      boolean keepAlive = true;
+      if (!waitingList.isEmpty()) {
+          keepAlive = false;
+          // Send out all of the message that have been added to the
+          // queue.
+          do {
+              Message msg = waitingList.remove();
+              boolean sentGood = sendMessage(msg);
+              keepAlive |= sentGood;
+          } while (!waitingList.isEmpty());
+      }
+      terminate |= !keepAlive;
+  }
+
+  /**
 	 * Store the object used by this client runnable to control when it is scheduled
 	 * for execution in the thread pool.
 	 * 
