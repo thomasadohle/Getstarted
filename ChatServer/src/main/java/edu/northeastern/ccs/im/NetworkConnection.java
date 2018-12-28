@@ -74,16 +74,16 @@ public class NetworkConnection implements Iterable<Message> {
 	 * @throws IOException Exception thrown if we have trouble completing this
      *                     connection
 	 */
-	public NetworkConnection(SocketChannel sockChan) throws IOException {
-		// Remember the channel that we will be using.
-	   // Set up the SocketChannel over which we will communicate.
-		channel = sockChan;
-		channel.configureBlocking(false);
+	public NetworkConnection(SocketChannel sockChan) {
 		// Create the queue that will hold the messages received from over the network
 		messages = new ConcurrentLinkedQueue<>();
 		// Allocate the buffer we will use to read data
 		buff = ByteBuffer.allocate(BUFFER_SIZE);
+		// Remember the channel that we will be using.
+	   // Set up the SocketChannel over which we will communicate.
+		channel = sockChan;
 		try {
+			channel.configureBlocking(false);
 			// Open the selector to handle our non-blocking I/O
 			selector = Selector.open();
 			// Register our channel to receive alerts to complete the connection
@@ -189,15 +189,15 @@ public class NetworkConnection implements Iterable<Message> {
 	                        charBuffer.position(start);
 	                    }
 	                    // First read in the handle
-	                    final String handle = charBuffer.subSequence(0, HANDLE_LENGTH).toString();
+	                    String handle = charBuffer.subSequence(0, HANDLE_LENGTH).toString();
 	                    // Skip past the handle
 	                    charBuffer.position(start + HANDLE_LENGTH + 1);
 	                    // Read the first argument containing the sender's name
-	                    final String sender = readArgument(charBuffer);
+	                    String sender = readArgument(charBuffer);
 	                    // Skip past the leading space
 	                    charBuffer.position(charBuffer.position() + 2);
 	                    // Read in the second argument containing the message
-	                    final String message = readArgument(charBuffer);
+	                    String message = readArgument(charBuffer);
 	                    // Add this message into our queue
 	                    Message newMsg = Message.makeMessage(handle, sender, message);
 	                    messages.add(newMsg);
