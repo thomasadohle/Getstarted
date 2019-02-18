@@ -62,5 +62,12 @@ class Test {
    assert(bcst2.toString().equals("BCT 9 Aristotle 2 --"));
   }
 
+  /**
+   * Test NetworkConnection
+   */
+  @org.junit.jupiter.api.Test
+  void testNetworkConnection1() {
+  }
+
 
 }
