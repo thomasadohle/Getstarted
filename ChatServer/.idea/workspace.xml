@@ -11,23 +11,23 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.6555343">
+    <splitter split-orientation="horizontal" split-proportion="0.5665658">
       <split-first>
         <leaf>
           <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/pom.xml">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="347">
-                  <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
+                  <caret line="43" selection-start-line="43" selection-end-line="43" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="Test.java" pinned="false" current-in-tab="false">
+          <file leaf-file-name="Test.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/test/java/edu.northeastern.ccs.im/Test.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="350">
-                  <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+                <state relative-caret-position="533">
+                  <caret line="66" lean-forward="true" selection-start-line="66" selection-end-line="66" />
                 </state>
               </provider>
             </entry>
@@ -35,26 +35,8 @@
           <file leaf-file-name="ClientTest.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/test/java/edu.northeastern.ccs.im/client/ClientTest.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="50">
-                  <caret line="2" column="23" selection-start-line="2" selection-start-column="23" selection-end-line="2" selection-end-column="23" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="ServerTest.java" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/src/test/java/edu.northeastern.ccs.im/server/ServerTest.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="50">
-                  <caret line="2" column="23" selection-start-line="2" selection-start-column="23" selection-end-line="2" selection-end-column="23" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="MessageType.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/main/java/edu/northeastern/ccs/im/MessageType.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="200">
-                  <caret line="8" column="12" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="12" />
+                <state relative-caret-position="100">
+                  <caret line="4" selection-start-line="4" selection-end-line="4" />
                 </state>
               </provider>
             </entry>
@@ -63,11 +45,11 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="MessageType.java" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/src/main/java/edu/northeastern/ccs/im/MessageType.java">
+          <file leaf-file-name="Message.java" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/main/java/edu/northeastern/ccs/im/Message.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="200">
-                  <caret line="8" column="12" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="12" />
+                <state relative-caret-position="3204">
+                  <caret line="190" column="5" lean-forward="true" selection-start-line="190" selection-start-column="5" selection-end-line="190" selection-end-column="5" />
                 </state>
               </provider>
             </entry>
@@ -98,11 +80,11 @@
       </MavenImportingSettings>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="-252" />
-    <option name="y" value="273" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-34" />
+    <option name="y" value="20" />
     <option name="width" value="1386" />
-    <option name="height" value="512" />
+    <option name="height" value="788" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -191,7 +173,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -205,7 +187,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.Test">
+  <component name="RunManager" selected="JUnit.Test.testMessage3">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
@@ -245,6 +227,75 @@
       <option name="PACKAGE_NAME" value="edu.northeastern.ccs.im" />
       <option name="MAIN_CLASS_NAME" value="edu.northeastern.ccs.im.Test" />
       <option name="METHOD_NAME" value="testMessage" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="Test.testMessage1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Chatter" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="edu.northeastern.ccs.im.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="edu.northeastern.ccs.im" />
+      <option name="MAIN_CLASS_NAME" value="edu.northeastern.ccs.im.Test" />
+      <option name="METHOD_NAME" value="testMessage1" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="Test.testMessage2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Chatter" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="edu.northeastern.ccs.im.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="edu.northeastern.ccs.im" />
+      <option name="MAIN_CLASS_NAME" value="edu.northeastern.ccs.im.Test" />
+      <option name="METHOD_NAME" value="testMessage2" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="Test.testMessage3" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Chatter" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="edu.northeastern.ccs.im.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="edu.northeastern.ccs.im" />
+      <option name="MAIN_CLASS_NAME" value="edu.northeastern.ccs.im.Test" />
+      <option name="METHOD_NAME" value="testMessage3" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
@@ -296,9 +347,15 @@
     <list>
       <item itemvalue="JUnit.Test.testMessage" />
       <item itemvalue="JUnit.Test" />
+      <item itemvalue="JUnit.Test.testMessage1" />
+      <item itemvalue="JUnit.Test.testMessage2" />
+      <item itemvalue="JUnit.Test.testMessage3" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.Test.testMessage3" />
+        <item itemvalue="JUnit.Test.testMessage2" />
+        <item itemvalue="JUnit.Test.testMessage1" />
         <item itemvalue="JUnit.Test" />
         <item itemvalue="JUnit.Test.testMessage" />
       </list>
@@ -318,14 +375,35 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Test_testMessage - 2019.02.18 at 08h 38m 52s.xml">
-      <configuration name="Test.testMessage" configurationId="JUnit" />
+    <history-entry file="Test_testMessage1 - 2019.02.18 at 09h 11m 20s.xml">
+      <configuration name="Test.testMessage1" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="Test - 2019.02.18 at 08h 39m 35s.xml">
-      <configuration name="Test" configurationId="JUnit" />
+    <history-entry file="Test_testMessage1 - 2019.02.18 at 09h 13m 25s.xml">
+      <configuration name="Test.testMessage1" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="Test - 2019.02.18 at 08h 41m 40s.xml">
-      <configuration name="Test" configurationId="JUnit" />
+    <history-entry file="Test_testMessage1 - 2019.02.18 at 09h 14m 48s.xml">
+      <configuration name="Test.testMessage1" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Test_testMessage2 - 2019.02.18 at 09h 22m 35s.xml">
+      <configuration name="Test.testMessage2" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Test_testMessage2 - 2019.02.18 at 09h 23m 16s.xml">
+      <configuration name="Test.testMessage2" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Test_testMessage3 - 2019.02.18 at 09h 26m 01s.xml">
+      <configuration name="Test.testMessage3" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Test_testMessage3 - 2019.02.18 at 09h 26m 37s.xml">
+      <configuration name="Test.testMessage3" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Test_testMessage3 - 2019.02.18 at 09h 27m 01s.xml">
+      <configuration name="Test.testMessage3" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Test_testMessage3 - 2019.02.18 at 09h 29m 00s.xml">
+      <configuration name="Test.testMessage3" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="Test_testMessage3 - 2019.02.18 at 09h 29m 28s.xml">
+      <configuration name="Test.testMessage3" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
@@ -340,12 +418,12 @@
       <window_info anchor="right" id="Capture Analysis" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3297546" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.40337422" />
       <window_info anchor="bottom" id="Version Control" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" />
       <window_info id="Capture Tool" />
       <window_info id="Designer" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20726173" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25189108" />
       <window_info anchor="bottom" id="SonarLint" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3297546" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -365,7 +443,28 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/test/java/edu.northeastern.ccs.im/Test.java</url>
+          <line>56</line>
+          <properties class="edu.northeastern.ccs.im.Test" method="testMessage3">
+            <option name="EMULATED" value="true" />
+          </properties>
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="1" />
+    </breakpoint-manager>
+  </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/test/java/edu.northeastern.ccs.im/server/ServerTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="50">
+          <caret line="2" column="25" lean-forward="true" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/northeastern/ccs/im/MessageType.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="200">
@@ -376,28 +475,28 @@
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="347">
-          <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/edu.northeastern.ccs.im/Test.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+          <caret line="43" selection-start-line="43" selection-end-line="43" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/edu.northeastern.ccs.im/client/ClientTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="50">
-          <caret line="2" column="23" selection-start-line="2" selection-start-column="23" selection-end-line="2" selection-end-column="23" />
+        <state relative-caret-position="100">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/edu.northeastern.ccs.im/server/ServerTest.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/northeastern/ccs/im/Message.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="50">
-          <caret line="2" column="23" selection-start-line="2" selection-start-column="23" selection-end-line="2" selection-end-column="23" />
+        <state relative-caret-position="3204">
+          <caret line="190" column="5" lean-forward="true" selection-start-line="190" selection-start-column="5" selection-end-line="190" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/edu.northeastern.ccs.im/Test.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="533">
+          <caret line="66" lean-forward="true" selection-start-line="66" selection-end-line="66" />
         </state>
       </provider>
     </entry>
