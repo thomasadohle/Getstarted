@@ -97,7 +97,7 @@ public class ClientRunnable implements Runnable {
 			} else {
 				initialized = false;
 			}
-		}
+		} else {System.out.println("messageItr does not have next");}
 	}
 
 	/**
@@ -153,6 +153,7 @@ public class ClientRunnable implements Runnable {
 	 */
 	public void enqueueMessage(Message message) {
 		waitingList.add(message);
+		System.out.println("Messaged enqued to ClientRunnable: " + message.toString());
 	}
 
 	/**
@@ -205,6 +206,7 @@ public class ClientRunnable implements Runnable {
 			handleIncomingMessages();
 			handleOutgoingMessages();
 		}
+		System.out.println("At this point, isIntialized? " + initialized);
 		// Finally, check if this client have been inactive for too long and,
 		// when they have, terminate the client.
 		if (timer.isBehind()) {
@@ -260,6 +262,7 @@ public class ClientRunnable implements Runnable {
 		boolean keepAlive = true;
 		if (!waitingList.isEmpty()) {
 			keepAlive = false;
+			System.out.println("Handling an outgoing message");
 			// Send out all of the message that have been added to the
 			// queue.
 			do {

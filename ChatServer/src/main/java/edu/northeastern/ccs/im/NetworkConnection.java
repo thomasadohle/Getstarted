@@ -88,6 +88,7 @@ public class NetworkConnection implements Iterable<Message> {
 			selector = Selector.open();
 			// Register our channel to receive alerts to complete the connection
 			key = channel.register(selector, SelectionKey.OP_READ);
+			System.out.println("Selector is open? " + selector.isOpen());
 		} catch (IOException e) {
 			// For the moment we are going to simply cover up that there was a problem.
 			ChatLogger.error(e.toString());
@@ -113,9 +114,12 @@ public class NetworkConnection implements Iterable<Message> {
 		while (result && wrapper.hasRemaining() && (attemptsRemaining > 0)) {
 			try {
 				attemptsRemaining--;
+				//channel.write(wrapper) is throwing a NotYetConnected Exception
 				bytesWritten += channel.write(wrapper);
+
 			} catch (IOException e) {
 				// Show that this was unsuccessful
+				System.out.println("sendMessage method caught IOExcpetion");
 				result = false;
 			}
 		}
@@ -160,7 +164,10 @@ public class NetworkConnection implements Iterable<Message> {
 	    }
 
 	    @Override
-	    public boolean hasNext() {
+	    public boolean hasNext()  {
+	    	try {
+					System.out.println("Selector.selectNow() = " + selector.selectNow());
+				} catch (Exception e){}
 	      boolean result = false;
 	        try {
 	            // If we have messages waiting for us, return true.
@@ -169,6 +176,7 @@ public class NetworkConnection implements Iterable<Message> {
 	            }
 	            // Otherwise, check if we can read in at least one new message
 	            else if (selector.selectNow() != 0) {
+	            	System.out.println("selector.selectNow() !=0");
 	                assert key.isReadable();
 	                // Read in the next set of commands from the channel.
 	                channel.read(buff);
